@@ -10,7 +10,7 @@ import os
 from tensorflow import keras
 import sys
 import cv2
-
+import scipy
 
 print(tf.__version__)
 print(sys.version_info)
@@ -18,9 +18,9 @@ for module in mpl, pd, np, keras:
     print(module.__name__, module.__version__)
 
 # set path
-train_dir = './input/train'
-valid_dir = './input/validation'
-test_dir = './input/test'
+train_dir = './train'
+valid_dir = './validation'
+test_dir = './test'
 
 # set para
 height = 128
@@ -37,10 +37,11 @@ def trainModel(model, train_generator, valid_generator, callbacks):
     history = model.fit(
         train_generator,
         epochs=epochs,
-        validation_data = valid_generator,
-        callbacks = callbacks
+        validation_data=valid_generator,
+        callbacks=callbacks
     )
     return history
+
 
 # show the changes of loss and accuracy during training
 def plot_learning_curves(history, label, epochs, min_value, max_value):
@@ -55,7 +56,6 @@ def plot_learning_curves(history, label, epochs, min_value, max_value):
 
 # use the model after finish training to classify images and save them into two different folders
 def predictModel(model, output_model_file):
-
     # load the weights of model
     model.load_weights(output_model_file)
 
@@ -63,7 +63,7 @@ def predictModel(model, output_model_file):
     os.makedirs('./save/cat', exist_ok=True)
     os.makedirs('./save/dog', exist_ok=True)
 
-    test_dir = './input/test1/'  # 1-12500.jpg
+    test_dir = './test/'  # 1-12500.jpg
     for i in range(1, 12500):
         img_name = test_dir + '{}.jpg'.format(i)
         img = cv2.imread(img_name)
@@ -79,7 +79,7 @@ def predictModel(model, output_model_file):
             print(img_name, ' is classified as Dog.')
 
 
-if __name__ ==  '__main__':
+if __name__ == '__main__':
 
     print('Start importing data...')
 
@@ -116,7 +116,6 @@ if __name__ ==  '__main__':
         shuffle=False,
         class_mode="categorical"
     )
-
 
     train_num = train_generator.samples
     valid_num = valid_generator.samples
@@ -161,7 +160,6 @@ if __name__ ==  '__main__':
 
     output_model_file = os.path.join(logdir,
                                      "catDog_weights.h5")
-
 
     print('Start training ...')
     # start training
